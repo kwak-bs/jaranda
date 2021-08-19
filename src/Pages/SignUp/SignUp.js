@@ -7,7 +7,7 @@ import userDataForm from 'utils/storage/userDataForm';
 import setUserData from 'utils/setUserInfo';
 import { Validation } from 'utils/checkValid';
 import { LOCAL_STORAGE, ROUTES, MENUS, ROLES } from 'utils/constants';
-import Modal from 'Modal';
+import Modal from 'Components/Modal';
 import CreditCardForm from './CreditCardForm';
 import ToastForm from 'Components/ToastForm';
 import { useHistory } from 'react-router-dom';
