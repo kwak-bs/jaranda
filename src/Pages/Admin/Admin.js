@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Modal from 'Modal';
+import Modal from 'Components/Modal';
 import SignUp from 'Pages/SignUp';
 import searchIcon from 'Assets/search.png';
 import { style } from './AdminStyle';

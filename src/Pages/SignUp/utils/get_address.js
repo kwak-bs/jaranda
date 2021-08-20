@@ -1,4 +1,4 @@
-export default function get_address(info, setInfo){
+export function get_address(info, setInfo){
     new window.daum.Postcode({
         oncomplete: function(data){
             const zcode_ = data.zonecode;
