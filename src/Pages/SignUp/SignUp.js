@@ -2,11 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { style } from './SignUpStyle';
 import { FiCheck } from 'react-icons/fi';
-import get_address from './utils/get_address';
 import userDataForm from 'utils/storage/userDataForm';
 import setUserData from 'utils/setUserInfo';
 import { Validation } from 'utils/checkValid';
 import { LOCAL_STORAGE, ROUTES, MENUS, ROLES } from 'utils/constants';
+import {
+  inputCheck,
+  get_address,
+  IdNumberOrEng,
+  Id4OrMoreDigits,
+  IdSpecialChar,
+  IdHangul,
+  PwEnglish,
+  PwNumber,
+  PwSpecialChar,
+  Pw8OrMoreDigits,
+} from './utils';
 import Modal from 'Components/Modal';
 import CreditCardForm from './CreditCardForm';
 import ToastForm from 'Components/ToastForm';
@@ -105,95 +116,12 @@ export default function SignUp({ accountPlus }) {
     }
   }, [userInfo.creditCard.cardNumber]);
 
-  const inputCheck = (limit) => {
-    const { userId, password, password_confirm, name, age, zcode, creditCard } =
-      inputChk;
-    const { cardNumber } = creditCard;
-    let result = true;
-    for (let i = 0; i < limit; i++) {
-      if (i === 0 && !userId) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '중복 확인 버튼을 눌러주세요.',
-        });
-        result = false;
-      } else if (i === 1 && !password) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '비밀번호를 다시 입력해주세요.',
-        });
-        result = false;
-      } else if (i === 2 && !password_confirm) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '비밀번호 확인을 해주세요.',
-        });
-        result = false;
-      } else if (i === 3 && !name) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '이름을 입력해주세요.',
-        });
-        result = false;
-      } else if (i === 4 && !age) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '나이를 입력해주세요.',
-        });
-        result = false;
-      } else if (i === 5 && !zcode) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '주소를 입력해주세요',
-        });
-        result = false;
-      } else if (i === 6 && !cardNumber) {
-        setToast({
-          ...toast,
-          status: true,
-          msg: '카드를 등록해주세요.',
-        });
-        result = false;
-      }
-      if (!result) break;
-    }
-    return result;
-  };
-
   const onChangeID = (e) => {
     const id = e.target.value;
-    const regex1 = /[A-Za-z0-9]+/g;
-    const regex2 = /[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]+/gi;
-    const regex3 = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
-    if (regex1.test(id)) {
-      setIsEngNum(true);
-    } else {
-      setIsEngNum(false);
-    }
-
-    if (regex3.test(id)) {
-      setIsEngNum(false);
-    } else {
-      setIsEngNum(true);
-    }
-
-    if (regex2.test(id)) {
-      setIsSpecialId(true);
-    } else {
-      setIsSpecialId(false);
-    }
-
-    if (id.length >= 4) {
-      setIsLenId(true);
-    } else {
-      setIsLenId(false);
-    }
+    setIsEngNum(IdNumberOrEng(id));
+    setIsEngNum(IdHangul(id));
+    setIsSpecialId(IdSpecialChar(id));
+    setIsLenId(Id4OrMoreDigits(id));
 
     setUserInfo({
       ...userInfo,
@@ -238,33 +166,13 @@ export default function SignUp({ accountPlus }) {
   };
 
   const onChangePW = (e) => {
-    inputCheck(1);
+    inputCheck(1, inputChk, setToast, toast);
 
     const pw = e.target.value;
-    const regex1 = /[A-Za-z]+/;
-    const regex2 = /[0-9]+/;
-    const regex3 = /[!@#$%^*+=-]+/;
-
-    if (regex1.test(pw)) {
-      setIsEnglish(true);
-    } else {
-      setIsEnglish(false);
-    }
-    if (regex2.test(pw)) {
-      setIsNumber(true);
-    } else {
-      setIsNumber(false);
-    }
-    if (regex3.test(pw)) {
-      setIsSpecial(true);
-    } else {
-      setIsSpecial(false);
-    }
-    if (pw.length >= 8) {
-      setIsLength(true);
-    } else {
-      setIsLength(false);
-    }
+    setIsEnglish(PwEnglish(pw));
+    setIsNumber(PwNumber(pw));
+    setIsSpecial(PwSpecialChar(pw));
+    setIsLength(Pw8OrMoreDigits(pw));
 
     setUserInfo({
       ...userInfo,
@@ -291,7 +199,7 @@ export default function SignUp({ accountPlus }) {
   };
 
   const onChangePwConfirm = (e) => {
-    inputCheck(2);
+    inputCheck(2, inputChk, setToast, toast);
     setUserPwConfirm(e.target.value);
     MatchPW(e.target.value);
   };
@@ -323,7 +231,7 @@ export default function SignUp({ accountPlus }) {
   };
 
   const onChangeName = (e) => {
-    inputCheck(3);
+    inputCheck(3, inputChk, setToast, toast);
     setUserInfo({
       ...userInfo,
       name: e.target.value,
@@ -342,7 +250,7 @@ export default function SignUp({ accountPlus }) {
   };
 
   const onChangeAge = (e) => {
-    inputCheck(4);
+    inputCheck(4, inputChk, setToast, toast);
     setUserInfo({
       ...userInfo,
       age: e.target.value,
@@ -367,7 +275,7 @@ export default function SignUp({ accountPlus }) {
 
   const onChangeDetailAddr = (e) => {
     setUserInfo({ ...userInfo, detailAddr: e.target.value });
-    inputCheck(5);
+    inputCheck(5, inputChk, setToast, toast);
   };
 
   const onChangeRoleAdmin = (e) => {
@@ -411,7 +319,7 @@ export default function SignUp({ accountPlus }) {
     const userAddr =
       userInfo.zcode + ' ' + userInfo.roadAddr + ' ' + userInfo.detailAddr;
 
-    const check = inputCheck(7);
+    const check = inputCheck(7, inputChk, setToast, toast);
 
     if (inputChk.userId && isOverlap !== userId) {
       setInputChk({
